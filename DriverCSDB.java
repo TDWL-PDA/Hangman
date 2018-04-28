@@ -1,3 +1,10 @@
+/*
+ * Name:			Hangman
+ * Description:		...
+ * Authors: 		...
+ * 
+ */
+
 import java.util.Scanner;
 import java.io.IOException;
 import java.io.BufferedWriter;
@@ -14,6 +21,13 @@ public class DriverCSDB {
 	
 	public static void main(String[] args) throws IOException
 	{
+		String word; // Word/sentence user has to guess
+		String hint; // Hint to make it easier for user to guess
+		boolean correct = false; // Play the game until user guesses the word
+		char guess; // User's guess
+		int spaces; // Number of ' ' in the word user has to guess. Need this in checkGameWon() function
+		String[] hangedMan = new String[7]; // Advanced graphics for background
+		
 		input = new Scanner(System.in);
 		//Open File
 		inFile = new java.io.File("TitlesandAuthors.csv");  //input file
@@ -56,25 +70,19 @@ public class DriverCSDB {
 			}
 		}
 		
-		//bookTitles.deleteNode("zorba the greek");
-		//bookTitles.printInOrder();
-		//System.out.println("\nThere are " + size + " book titles");
-		
 		// Find the node
-		String word = bookTitles.getNode().getWord();
-		String hint = bookTitles.getNode().getHint();
-		System.out.println(word + " " + hint);
+		word = bookTitles.getNode().getWord(); // Word that user has to guess
+		hint = bookTitles.getNode().getHint(); // A hint to make guessing easier
+		//System.out.println(word + " " + hint);
 		
 		// Get spaces
-		char[] guessArray = new char[word.length()];
-		int underscores = word.length();
+		char[] guessArray = new char[word.length()]; // Array size is the length of the word user has to guess
+		int underscores = word.length(); // A number of how many '_' have to be printed
+		spaces = getWord(word, guessArray); // Put '_' and ' ' into char array, return the number of spaces 
 		
-		getWord(word, guessArray, underscores); // Put '_' and ' ' into char array 
-		//printGuess(guessArray, underscores); // Print guessArray[]
+		int mistakes = 0; // Number of mistakes made by user
 		
-		int mistakes = 0;
-		
-		String[] hangedMan = new String[7];
+		// Fill the array with advanced graphics. Can't explain, this is too complicated
 		hangedMan[0] = "    O\n";
 		hangedMan[1] = "   /";
 		hangedMan[2] = "|";
@@ -83,29 +91,42 @@ public class DriverCSDB {
 		hangedMan[5] = "   /";
 		hangedMan[6] = " \\ \n";
 		
-		boolean correct = false;
-		char guess;
-		
-		while(correct != true && mistakes != 7)
+		hangAMan(hangedMan, mistakes); // Display 'graphics'
+		// Run the loop until user makes 7 mistakes or guesses the word/sentence
+		while(mistakes != 7 || correct == false)
 		{
-			hangAMan(hangedMan, mistakes);
-			printGuess(guessArray, underscores);
+			printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
 			System.out.print("Input your guess: ");
 			guess = input.next().toLowerCase().charAt(0);
-			mistakes = checkGuess(guess, underscores, word, guessArray, mistakes);
-			correct = checkGameWon(correct, underscores, guessArray, mistakes, word);
+			mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
+			hangAMan(hangedMan, mistakes); // Display 'graphics'
+			correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game
+			
 		}
+		//System.out.println("Game ended");
 	}
 	
-	public static boolean checkGameWon(boolean correct, int underscores, char[] guessArray, int mistakes, String word)
+	/**
+	 * checkGameWon()
+	 * @param char[] guessArray		Array of correct letter and underscores
+	 * @param int mistakes			Number of mistakes
+	 * @param int spaces			Number of spaces in the word/sentence 
+	 * @param int underscores		Length of the word/sentence
+	 * @return boolean correct		Return if the game has to end or not
+	 * Description					Checks if the game has to end or not
+	 */
+	public static boolean checkGameWon(char[] guessArray, int mistakes, int spaces, int underscores)
 	{
-		int temp = 0;
+		boolean correct = false; // End the game
+		int temp = spaces; // Start with number of spaces
 		if(mistakes == 7)
 		{
 			System.out.println("You made 7 mistakes and lost the game.");
+			correct = true;
 		}
 		else
 		{
+			// Count how many letters are guessed correctly
 			for(int i = 0; i < underscores; i++)
 			{
 				if(guessArray[i] != '_' && guessArray[i] != ' ')
@@ -114,27 +135,39 @@ public class DriverCSDB {
 				}
 			}
 		}
+		//System.out.println("Temp: " + temp + " | length: " + guessArray.length);
+		
+		// If all the letters are guessed correctly, end the game
 		if(temp == guessArray.length)
 		{
-			correct = false;
+			correct = true;
 			System.out.println("You guessed the word right!");
-
 		}
 
 		return correct;
 	}
 	
-	public static int checkGuess(char guess, int underscores, String word, char[] guessArray, int mistakes)
+	/**
+	 * checkGuess()
+	 * @param char guess			User's guess
+	 * @param char[] guessArray		Array of letters and underscores
+	 * @param String word			Word/sentence that has to be guessed
+	 * @param int mistakes			Number of mistakes
+	 * @return int mistakes			Incremented number of mistakes
+	 * Description					Checks if the guess was correct or not
+	 */
+	public static int checkGuess(char guess, String word, char[] guessArray, int mistakes)
 	{
-		int isChar = -1;
-		isChar = word.indexOf(guess);
+		int isChar = -1; // If the letter user guessed exists in the word/sentence
+		isChar = word.indexOf(guess); // Find user's guessed letter
+		// If the guess was correct
 		if(isChar != -1)
 		{
-			for(int i = 0; i < underscores; i++)
+			for(int i = 0; i < word.length(); i++)
 			{
 				if(word.charAt(i) == guess)
 				{
-					guessArray[i] = guess;
+					guessArray[i] = guess; // Put the letter(s) in its correct spot
 				}
 			}			
 		}
@@ -145,13 +178,19 @@ public class DriverCSDB {
 		return mistakes;
 	}
 	
+	/**
+	 * hangAMan()
+	 * @param String hangedMan		String array that contains 'graphics'/background
+	 * @param int mistakes			Number of mistakes
+	 * Description					Print the background/'graphics' + the progress of the game
+	 */
 	public static void hangAMan(String[] hangedMan, int mistakes)
 	{
 		// Always print
 		System.out.println("    _____");
 		System.out.println("    |");
 		System.out.println("    |");
-		// Print according to mistakes
+		// Print parts of stickman according to mistakes
 		for(int i = 0; i < mistakes; i++)
 		{
 			System.out.print(hangedMan[i]);
@@ -159,6 +198,12 @@ public class DriverCSDB {
 		System.out.println();
 	}
 	
+	/**
+	 * printGuess()
+	 * @param char[] guessArray		Array of correct letters and underscores
+	 * @param underscores			Length of the word/sentence
+	 * Description					Print underscores and correctly guessed letters
+	 */
 	public static void printGuess(char[] guessArray, int underscores)
 	{
 		for(int i = 0; i < underscores; i++)
@@ -168,9 +213,17 @@ public class DriverCSDB {
 		System.out.println();
 	}
 	
-	public static void getWord(String word, char[] guessArray, int underscores)
+	/**
+	 * getWord()
+	 * @param String word			Word that user has to guess
+	 * @param char[] guessArray		Array of correct letters and underscores
+	 * @return int spaces			Number of spaces in the word/sentence
+	 * Description					Fill guessArray with _ instead of letters and count spaces
+	 */
+	public static int getWord(String word, char[] guessArray)
 	{
-		for(int i = 0; i < underscores; i++)
+		int spaces = 0;
+		for(int i = 0; i < word.length(); i++)
 		{
 			if(word.charAt(i) != (' '))
 			{
@@ -179,8 +232,10 @@ public class DriverCSDB {
 			else
 			{
 				guessArray[i] = ' ';
+				spaces++;
 			}
 		}
+		return spaces;
 	}
 
 }

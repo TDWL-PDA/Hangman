@@ -105,7 +105,7 @@ public class DriverCSDB {
 		
 		hangAMan(hangedMan, mistakes); // Display 'graphics'
 		// Run the loop until user makes 7 mistakes or guesses the word/sentence
-		while(mistakes != 7 || correct == false)
+		while(mistakes != 7 && correct == false)
 		{
 			printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
 			System.out.print("Input your guess: ");

@@ -1,4 +1,7 @@
-*.class
+.vscode
 .project
 .classpath
-.md
+README.md
+BinaryTree.class
+DriverCSDB.class
+Node.class

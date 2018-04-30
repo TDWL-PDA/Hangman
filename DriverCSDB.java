@@ -145,7 +145,7 @@ public class DriverCSDB {
 		int temp = spaces; // Start with number of spaces
 		if(mistakes == 7)
 		{
-			System.out.println("You made 7 mistakes and lost the game and killed a man.");
+			System.out.println("You killed a man.");
 			correct = true;
 		}
 		else

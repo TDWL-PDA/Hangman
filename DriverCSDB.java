@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.regex.*;
+import java.util.InputMismatchException;
 
 public class DriverCSDB {
 	
@@ -26,7 +27,7 @@ public class DriverCSDB {
 		String hint; // Hint to make it easier for user to guess
 		
 		boolean correct = false; // Play the game until user guesses the word
-		char guess; // User's guess
+		char guess = ' '; // User's guess
 		
 		int wordIndex; // Index of a word in the binary tree
 		Random rand = new Random();
@@ -93,7 +94,8 @@ public class DriverCSDB {
 		
 		
 		boolean playAgain = false;
-		char playAgainChar;
+		boolean invalidUserInput = false;
+		char playAgainChar = 'n';
 		Node randNode;
 		do
 		{
@@ -118,16 +120,38 @@ public class DriverCSDB {
 					System.out.println(word);
 					System.out.println("Hint: " + hint);
 					printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
-					System.out.print("Input your guess: ");
-					guess = input.next().toLowerCase().charAt(0);
+					do
+					{
+						try
+						{
+							System.out.print("Input your guess: ");
+							guess = input.next().toLowerCase().charAt(0);
+							invalidUserInput = false;
+						}
+						catch (InputMismatchException e)
+						{
+							System.out.println("Invalid Input. Try again.");
+							invalidUserInput = true;
+						}
+					} while (invalidUserInput);
 					mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
 					hangAMan(hangedMan, mistakes); // Display 'graphics'
-					correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game
-					System.out.println(correct);
-					
+					correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game					
 				}
-				System.out.println("Do you want to play again?");
-				playAgainChar = input.next().toLowerCase().charAt(0);
+				do
+				{
+					try
+					{
+						System.out.println("Do you want to play again?");
+						playAgainChar = input.next().toLowerCase().charAt(0);
+						invalidUserInput = false;
+					}
+					catch (InputMismatchException e)
+					{
+						System.out.println("Invalid Input. Try again.");
+						invalidUserInput = true;
+					}
+				} while (invalidUserInput);
 				if (playAgainChar == 'y')
 				{
 					playAgain = true;

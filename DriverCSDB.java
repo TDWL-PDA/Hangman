@@ -56,7 +56,7 @@ public class DriverCSDB {
 		{
 			words[i] = words[i].replaceAll("\n","").replaceAll("\r", "");
 		}
-		Pattern pattern = Pattern.compile("[a-zA-Z0-9'’,. -]*");
+		Pattern pattern = Pattern.compile("[a-zA-Z0-9'’, -]*");
 		Matcher matcher;
 		int size = 0;
 		String[] splits = new String[2];
@@ -76,14 +76,17 @@ public class DriverCSDB {
 				//System.out.println(words[i]);
 			}
 		}
+		System.out.println("size: " + size);
 		
 		// Random word
 		wordIndex = rand.nextInt(size);
-		System.out.println(size + " " + wordIndex);
+		//System.out.println(size + " " + wordIndex);
 		
 		
 		// Find the node
 		word = bookTitles.getNode().getWord(); // Word that user has to guess
+		//bookTitles.findNode();
+		word = findRandomNode(bookTitles).getWord();
 		hint = bookTitles.getNode().getHint(); // A hint to make guessing easier
 		//System.out.println(word + " " + hint);
 		
@@ -105,19 +108,28 @@ public class DriverCSDB {
 		
 		hangAMan(hangedMan, mistakes); // Display 'graphics'
 		// Run the loop until user makes 7 mistakes or guesses the word/sentence
-		while(mistakes != 7 || correct == false)
+		while(mistakes != 7 && correct == false)
 		{
+			System.out.println(word);
 			printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
 			System.out.print("Input your guess: ");
 			guess = input.next().toLowerCase().charAt(0);
 			mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
 			hangAMan(hangedMan, mistakes); // Display 'graphics'
 			correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game
+			System.out.println(correct);
 			
 		}
 		//System.out.println("Game ended");
 	}
 	
+	public static Node findRandomNode(BinaryTree storyTree)
+	{
+		Node tempNode;
+		tempNode = storyTree.randNodeUtil();
+		storyTree.deleteNode(tempNode.getWord());
+		return tempNode;
+	}
 	/**
 	 * checkGameWon()
 	 * @param char[] guessArray		Array of correct letter and underscores
@@ -133,7 +145,7 @@ public class DriverCSDB {
 		int temp = spaces; // Start with number of spaces
 		if(mistakes == 7)
 		{
-			System.out.println("You made 7 mistakes and lost the game.");
+			System.out.println("You made 7 mistakes and lost the game and killed a man.");
 			correct = true;
 		}
 		else

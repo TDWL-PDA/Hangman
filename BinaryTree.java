@@ -6,7 +6,9 @@ class BinaryTree
 	private Node node;         //contains the data of each leaf
 	private BinaryTree left;   //left side of the binary tree
 	private BinaryTree right;  //right side of the binary tree
-
+	private static int size = 0;  		   //number of nodes in the tree
+	private static int randNum = (int)(Math. random() * size + 1);
+	private static int count = 0;
 	BinaryTree()
 	{
 		node = null;
@@ -19,10 +21,15 @@ class BinaryTree
 		node = root;
 		left = null;
 		right = null;
+		size++;
 	}
 	/*
 	* Getters and Setters
 	*/
+	public void setRandNum(int num)
+	{
+		randNum = num;
+	}
 	public void setNode(Node dataIN)
 	{
 		node = dataIN;
@@ -53,6 +60,7 @@ class BinaryTree
 		{
 			Node nodeAdd = new Node(word, hint);  //create new Node
 			node = nodeAdd;
+			size++;
 		}
 		else
 		{
@@ -110,10 +118,12 @@ class BinaryTree
 		{
 			if (left == null && right == null)
 			{
+				size--;
 				node=null;
 			}
 			else if (right == null && left != null)  //if one child is left
 			{
+				size--;
 				node = left.node;
 				if (left.right != null)
 				{
@@ -134,6 +144,7 @@ class BinaryTree
 			} 
 			else if (left == null && right != null)  //if one child is right
 			{
+				size--;
 				node = right.node;
 				
 				if (right.left != null)
@@ -159,7 +170,6 @@ class BinaryTree
 				right.deleteNode(node.getWord());
 			}
 		}
-
 	}
 	/*
 	* Description:
@@ -179,7 +189,49 @@ class BinaryTree
 		}
 		return tempNode;
 	}
-	
+	// public Node randomNode(Node root)
+	// {
+	// 	int randNum;
+	// 	//generate a random number between 0 and the size of the tree
+	// 	randNum = (int)(Math. random() * size + 1);
+	// 	return randNodeUtil(root, count);	
+	// }
+	public Node randNodeUtil()
+	{
+		Node tempNode = null;
+		int leftOrRight = (int)(Math.round((Math. random())));
+		while (count < randNum)
+		{
+			if (leftOrRight == 0)
+			{
+				if (left != null)
+				{
+					tempNode = left.randNodeUtil();
+					count++;
+				}
+				else
+				{
+					tempNode = node;
+					count = randNum;
+				}
+			}
+			else if (leftOrRight == 1)
+			{
+				if (right != null)
+				{
+					tempNode = right.randNodeUtil();
+					count++;
+				}
+				else
+				{
+					tempNode = node;
+					count = randNum;
+				}
+			}
+		}
+		
+		return tempNode;
+	}
 	/*
 	* Description: prints the strings within the binary tree in alphabetical order
 	* Parameters: none

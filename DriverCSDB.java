@@ -5,6 +5,7 @@
  * 
  */
 
+import java.util.Random;
 import java.util.Scanner;
 import java.io.IOException;
 import java.io.BufferedWriter;
@@ -23,9 +24,15 @@ public class DriverCSDB {
 	{
 		String word; // Word/sentence user has to guess
 		String hint; // Hint to make it easier for user to guess
+		
 		boolean correct = false; // Play the game until user guesses the word
 		char guess; // User's guess
+		
+		int wordIndex; // Index of a word in the binary tree
+		Random rand = new Random();
+		
 		int spaces; // Number of ' ' in the word user has to guess. Need this in checkGameWon() function
+		
 		String[] hangedMan = new String[7]; // Advanced graphics for background
 		
 		input = new Scanner(System.in);
@@ -69,6 +76,11 @@ public class DriverCSDB {
 				//System.out.println(words[i]);
 			}
 		}
+		
+		// Random word
+		wordIndex = rand.nextInt(size);
+		System.out.println(size + " " + wordIndex);
+		
 		
 		// Find the node
 		word = bookTitles.getNode().getWord(); // Word that user has to guess

@@ -75,26 +75,11 @@ public class DriverCSDB {
 			{
 				//System.out.println(words[i]);
 			}
-		}
-		System.out.println("size: " + size);
-		
+		}	
 		// Random word
 		wordIndex = rand.nextInt(size);
 		//System.out.println(size + " " + wordIndex);
-		
-		
-		// Find the node
-		word = bookTitles.getNode().getWord(); // Word that user has to guess
-		//bookTitles.findNode();
-		word = findRandomNode(bookTitles).getWord();
-		hint = bookTitles.getNode().getHint(); // A hint to make guessing easier
-		//System.out.println(word + " " + hint);
-		
-		// Get spaces
-		char[] guessArray = new char[word.length()]; // Array size is the length of the word user has to guess
-		int underscores = word.length(); // A number of how many '_' have to be printed
-		spaces = getWord(word, guessArray); // Put '_' and ' ' into char array, return the number of spaces 
-		
+
 		int mistakes = 0; // Number of mistakes made by user
 		
 		// Fill the array with advanced graphics. Can't explain, this is too complicated
@@ -106,28 +91,74 @@ public class DriverCSDB {
 		hangedMan[5] = "   /";
 		hangedMan[6] = " \\ \n";
 		
-		hangAMan(hangedMan, mistakes); // Display 'graphics'
-		// Run the loop until user makes 7 mistakes or guesses the word/sentence
-		while(mistakes != 7 && correct == false)
+		
+		boolean playAgain = false;
+		char playAgainChar;
+		Node randNode;
+		do
 		{
-			System.out.println(word);
-			printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
-			System.out.print("Input your guess: ");
-			guess = input.next().toLowerCase().charAt(0);
-			mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
-			hangAMan(hangedMan, mistakes); // Display 'graphics'
-			correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game
-			System.out.println(correct);
-			
-		}
-		//System.out.println("Game ended");
+			mistakes = 0;
+			correct = false;
+			// Find the node
+			//bookTitles.findNode();
+			randNode = findRandomNode(bookTitles);
+			if (randNode != null)
+			{
+				word = randNode.getWord();
+				hint = randNode.getHint(); // A hint to make guessing easier
+				// Get spaces
+				char[] guessArray = new char[word.length()]; // Array size is the length of the word user has to guess
+				int underscores = word.length(); // A number of how many '_' have to be printed
+				spaces = getWord(word, guessArray); // Put '_' and ' ' into char array, return the number of spaces 
+
+				hangAMan(hangedMan, mistakes); // Display 'graphics'
+				// Run the loop until user makes 7 mistakes or guesses the word/sentence
+				while(mistakes != 7 && correct == false)
+				{
+					System.out.println(word);
+					System.out.println("Hint: " + hint);
+					printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
+					System.out.print("Input your guess: ");
+					guess = input.next().toLowerCase().charAt(0);
+					mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
+					hangAMan(hangedMan, mistakes); // Display 'graphics'
+					correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game
+					System.out.println(correct);
+					
+				}
+				System.out.println("Do you want to play again?");
+				playAgainChar = input.next().toLowerCase().charAt(0);
+				if (playAgainChar == 'y')
+				{
+					playAgain = true;
+				}
+				else
+				{
+					playAgain = false;
+				}
+			}
+			else
+			{
+				playAgain = false;
+			}
+		}while (playAgain);
 	}
 	
 	public static Node findRandomNode(BinaryTree storyTree)
 	{
-		Node tempNode;
-		tempNode = storyTree.randNodeUtil();
-		storyTree.deleteNode(tempNode.getWord());
+		Node tempNode = null;
+		if (storyTree.getSize() > 0)
+		{
+			storyTree.setCount(0);
+			storyTree.changeRandNum();
+			tempNode = storyTree.randNodeUtil();
+			System.out.println("tempNode: " + tempNode);
+			storyTree.deleteNode(tempNode.getWord());
+		}
+		else
+		{
+			System.out.println("There are no more words in the bank. Start game over.");
+		}
 		return tempNode;
 	}
 	/**
@@ -249,7 +280,6 @@ public class DriverCSDB {
 		int spaces = 0;
 		for(int i = 0; i < word.length(); i++)
 		{
-			System.out.println(word.charAt(i));
 			if(word.charAt(i) == ',')
 			{
 				guessArray[i] = ',';

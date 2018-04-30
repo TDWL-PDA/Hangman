@@ -7,7 +7,7 @@ class BinaryTree
 	private BinaryTree left;   //left side of the binary tree
 	private BinaryTree right;  //right side of the binary tree
 	private static int size = 0;  		   //number of nodes in the tree
-	private static int randNum = (int)(Math. random() * size + 1);
+	private static int randNum;
 	private static int count = 0;
 	BinaryTree()
 	{
@@ -26,9 +26,13 @@ class BinaryTree
 	/*
 	* Getters and Setters
 	*/
-	public void setRandNum(int num)
+	public int getSize()
 	{
-		randNum = num;
+		return size;
+	}
+	public void setCount(int num)
+	{
+		count = num;
 	}
 	public void setNode(Node dataIN)
 	{
@@ -46,7 +50,14 @@ class BinaryTree
 
 
 	/***********************Methods*****************************/
-
+	/*
+	* Sets the random number
+	*/
+	public void changeRandNum()
+	{
+		randNum = (int)(Math. random() * size + 1);
+		System.out.println("Size: " + size);
+	}
 	/*
 	* Description: will add the inputed string into a binary seach tree.
 	*  			   The strings will be sorted alphabetically
@@ -100,6 +111,7 @@ class BinaryTree
 	*/
 	public void deleteNode(String deleteValue)
 	{
+		//search the tree until you find the node you want to delete
 		if (node != null && !(node.getWord().equalsIgnoreCase(deleteValue)))
 		{
 			if (left != null)
@@ -111,18 +123,16 @@ class BinaryTree
 				right.deleteNode(deleteValue);
 			}
 		}
-		//search the tree until you find the node you want to delete
-		//see if node has any child
-		//if no children then just set the parent link to null
-		if (node.getWord().equalsIgnoreCase(deleteValue))
+		else if (node == null)
 		{
-			if (left == null && right == null)
+			System.out.println("Word is not in tree");
+			return;
+		}
+		else if (node.getWord().equalsIgnoreCase(deleteValue))
+		{
+			if (right == null && left != null)  //if one child is left
 			{
-				size--;
-				node=null;
-			}
-			else if (right == null && left != null)  //if one child is left
-			{
+				System.out.println("Only left");
 				size--;
 				node = left.node;
 				if (left.right != null)
@@ -164,11 +174,29 @@ class BinaryTree
 					right = null;
 				}
 			}
-			else if (right != null && left != null)   //if two children
+			else if (right != null && left != null && right.node != null)   //if two children
 			{
 				node = right.findMin();
+				System.out.println("node: " + node);
 				right.deleteNode(node.getWord());
 			}
+			else if (right == null && left == null)
+			{
+				node = null;
+				size--;
+			}
+		}
+		else
+		{
+			System.out.println("Word is not in tree");
+		}
+		if (right != null && right.node == null)
+		{
+			right = null;
+		}
+		if (left != null && left.node == null)
+		{
+			left = null;
 		}
 	}
 	/*
@@ -179,13 +207,16 @@ class BinaryTree
 	public Node findMin()
 	{
 		Node tempNode = node;
-		if (left==null && right==null)
+		if (node != null)
 		{
-			tempNode = node;
-		}
-		else if (left != null)
-		{
-			tempNode = left.findMin();
+			if (left==null && right==null)
+			{
+				tempNode = node;
+			}
+			else if (left != null && left.node != null)
+			{
+				tempNode = left.findMin();
+			}
 		}
 		return tempNode;
 	}
@@ -198,35 +229,43 @@ class BinaryTree
 	// }
 	public Node randNodeUtil()
 	{
+
 		Node tempNode = null;
 		int leftOrRight = (int)(Math.round((Math. random())));
 		while (count < randNum)
 		{
-			if (leftOrRight == 0)
+			if (node != null)
 			{
-				if (left != null)
+				if (leftOrRight == 0)
 				{
-					tempNode = left.randNodeUtil();
-					count++;
+					if (left != null && left.node != null)
+					{
+						tempNode = left.randNodeUtil();
+						count++;
+					}
+					else
+					{
+						tempNode = node;
+						count = randNum;
+					}
 				}
-				else
+				else if (leftOrRight == 1)
 				{
-					tempNode = node;
-					count = randNum;
+					if (right != null && right.node != null)
+					{
+						tempNode = right.randNodeUtil();
+						count++;
+					}
+					else
+					{
+						tempNode = node;
+						count = randNum;
+					}
 				}
 			}
-			else if (leftOrRight == 1)
+			else
 			{
-				if (right != null)
-				{
-					tempNode = right.randNodeUtil();
-					count++;
-				}
-				else
-				{
-					tempNode = node;
-					count = randNum;
-				}
+				System.out.println("node is null");
 			}
 		}
 		

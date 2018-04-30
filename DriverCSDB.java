@@ -237,14 +237,31 @@ public class DriverCSDB {
 		int spaces = 0;
 		for(int i = 0; i < word.length(); i++)
 		{
-			if(word.charAt(i) != (' '))
+			System.out.println(word.charAt(i));
+			if(word.charAt(i) == ',')
+			{
+				guessArray[i] = ',';
+			}
+			else if(word.charAt(i) == '\'')
+			{
+				guessArray[i] = '\'';
+			}
+			else if(word.charAt(i) == '-')
+			{
+				guessArray[i] = '-';
+			}
+			else if(Character.isLetterOrDigit(word.charAt(i)))
 			{
 				guessArray[i] = '_';
 			}
-			else
+			else if(word.charAt(i) == (' '))
 			{
 				guessArray[i] = ' ';
 				spaces++;
+			}
+			else
+			{
+				guessArray[i] = '\'';
 			}
 		}
 		return spaces;

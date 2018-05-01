@@ -27,10 +27,9 @@ public class DriverCSDB {
 		String hint; // Hint to make it easier for user to guess
 		
 		boolean correct = false; // Play the game until user guesses the word
-		char guess = ' '; // User's guess
-		
-		int wordIndex; // Index of a word in the binary tree
-		Random rand = new Random();
+		String stringGuess; // User's guess
+		char guess = ' '; // First char of the guess
+
 		
 		int spaces; // Number of ' ' in the word user has to guess. Need this in checkGameWon() function
 		
@@ -111,19 +110,33 @@ public class DriverCSDB {
 					printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
 					System.out.println("If you want to quit the game input 0.");
 					System.out.print("Input your guess: ");
-					guess = input.next().toLowerCase().charAt(0);
+					do
+					{
+						stringGuess = input.nextLine().toLowerCase(); // Get user's guess
+					} while(stringGuess.length() <= 0);
+					guess = stringGuess.charAt(0); // Take the first letter
+					// If 0 - quit the game
 					if (guess == '0')
 					{
 						System.out.println("Game Over.");
 						return;
 					}
-					mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
-					hangAMan(hangedMan, mistakes); // Display 'graphics'
-					correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game					
+					// If user guessed the word right, quit the game
+					if(stringGuess.equalsIgnoreCase(word))
+					{
+						correct = true;
+						System.out.println("You guessed the word right!");
+					}
+					else
+					{
+						mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
+						hangAMan(hangedMan, mistakes); // Display 'graphics'
+						correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game		
+					}
 				}
 
 				System.out.println("Do you want to play again?");
-				playAgainChar = input.next().toLowerCase().charAt(0);
+				playAgainChar = input.nextLine().toLowerCase().charAt(0);
 				if (playAgainChar == 'y')
 				{
 					playAgain = true;
@@ -182,7 +195,6 @@ public class DriverCSDB {
 				}
 			}
 		}
-		//System.out.println("Temp: " + temp + " | length: " + guessArray.length);
 		
 		// If all the letters are guessed correctly, end the game
 		if(temp == guessArray.length)
@@ -212,7 +224,12 @@ public class DriverCSDB {
 		{
 			for(int i = 0; i < word.length(); i++)
 			{
-				if(word.charAt(i) == guess)
+				if(guessArray[i] == guess)
+				{
+					mistakes++;
+					i = word.length();
+				}
+				else if(word.charAt(i) == guess)
 				{
 					guessArray[i] = guess; // Put the letter(s) in its correct spot
 				}

@@ -132,7 +132,6 @@ class BinaryTree
 		{
 			if (right == null && left != null)  //if one child is left
 			{
-				System.out.println("Only left");
 				size--;
 				node = left.node;
 				if (left.right != null)
@@ -177,7 +176,6 @@ class BinaryTree
 			else if (right != null && left != null && right.node != null)   //if two children
 			{
 				node = right.findMin();
-				System.out.println("node: " + node);
 				right.deleteNode(node.getWord());
 			}
 			else if (right == null && left == null)
@@ -265,7 +263,7 @@ class BinaryTree
 			}
 			else
 			{
-				System.out.println("node is null");
+				count = randNum;
 			}
 		}
 		

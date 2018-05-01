@@ -39,7 +39,6 @@ public class DriverCSDB {
 		input = new Scanner(System.in);
 		//Open File
 		inFile = new java.io.File("TitlesandAuthors.csv");  //input file
-		//inFile = new java.io.File("bookTitles.txt");
 		if (!inFile.exists())
 		{
 			System.out.println("File not found");
@@ -64,23 +63,14 @@ public class DriverCSDB {
 		for (int i = 0; i < words.length; i++)
 		{
 			splits = words[i].split(",");
-			//System.out.println(splits[0] + " " + splits[1]);
 			matcher = pattern.matcher(splits[0]);
 			if (matcher.matches())
 			{
 				//put in tree
 				bookTitles.addNode(splits[0], splits[1]);
-				size++;
 		    }
-			else
-			{
-				//System.out.println(words[i]);
-			}
-		}	
-		// Random word
-		wordIndex = rand.nextInt(size);
-		//System.out.println(size + " " + wordIndex);
 
+		}
 		int mistakes = 0; // Number of mistakes made by user
 		
 		// Fill the array with advanced graphics. Can't explain, this is too complicated
@@ -102,9 +92,8 @@ public class DriverCSDB {
 			mistakes = 0;
 			correct = false;
 			// Find the node
-			//bookTitles.findNode();
 			randNode = findRandomNode(bookTitles);
-			if (randNode != null)
+			try
 			{
 				word = randNode.getWord();
 				hint = randNode.getHint(); // A hint to make guessing easier
@@ -120,38 +109,21 @@ public class DriverCSDB {
 					System.out.println(word);
 					System.out.println("Hint: " + hint);
 					printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
-					do
+					System.out.println("If you want to quit the game input 0.");
+					System.out.print("Input your guess: ");
+					guess = input.next().toLowerCase().charAt(0);
+					if (guess == '0')
 					{
-						try
-						{
-							System.out.print("Input your guess: ");
-							guess = input.next().toLowerCase().charAt(0);
-							invalidUserInput = false;
-						}
-						catch (InputMismatchException e)
-						{
-							System.out.println("Invalid Input. Try again.");
-							invalidUserInput = true;
-						}
-					} while (invalidUserInput);
+						System.out.println("Game Over.");
+						return;
+					}
 					mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
 					hangAMan(hangedMan, mistakes); // Display 'graphics'
 					correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game					
 				}
-				do
-				{
-					try
-					{
-						System.out.println("Do you want to play again?");
-						playAgainChar = input.next().toLowerCase().charAt(0);
-						invalidUserInput = false;
-					}
-					catch (InputMismatchException e)
-					{
-						System.out.println("Invalid Input. Try again.");
-						invalidUserInput = true;
-					}
-				} while (invalidUserInput);
+
+				System.out.println("Do you want to play again?");
+				playAgainChar = input.next().toLowerCase().charAt(0);
 				if (playAgainChar == 'y')
 				{
 					playAgain = true;
@@ -161,8 +133,9 @@ public class DriverCSDB {
 					playAgain = false;
 				}
 			}
-			else
+			catch (NullPointerException e)
 			{
+				System.out.println("There are no more words in the bank. Start game over.");
 				playAgain = false;
 			}
 		}while (playAgain);
@@ -176,12 +149,7 @@ public class DriverCSDB {
 			storyTree.setCount(0);
 			storyTree.changeRandNum();
 			tempNode = storyTree.randNodeUtil();
-			System.out.println("tempNode: " + tempNode);
 			storyTree.deleteNode(tempNode.getWord());
-		}
-		else
-		{
-			System.out.println("There are no more words in the bank. Start game over.");
 		}
 		return tempNode;
 	}

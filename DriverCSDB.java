@@ -18,7 +18,6 @@ public class DriverCSDB {
 	
 	public static java.io.File inFile;  //input file
 	public static Scanner inputFile;    //used to read lines of input file
-	public static BufferedWriter beforeFile;	// out file for tree before deleting words.
 	public static Scanner input;
 	
 	public static void main(String[] args) throws IOException
@@ -169,32 +168,39 @@ public class DriverCSDB {
 				System.exit(-1);
 			}
 		}
-		//reads the entire text file and places it into one string
-		String entireFileText = new Scanner(inFile).useDelimiter("\\Z").next();
-	 	//changes all letters to lower case and replaces all characters that are not
-		//a-z, A-Z, or the apostrophe with a space.
-		//The string is then split by spaces and placed into an array of words
-		//String[] words = entireFileText.replaceAll("[^a-zA-Z' ]", " ").toLowerCase().split("\\s+");
-		String[] words = entireFileText.toLowerCase().split("\\n+");
-		for (int i = 0; i<words.length;i++)
+		try
 		{
-			words[i] = words[i].replaceAll("\n","").replaceAll("\r", "");
-		}
-		Pattern pattern = Pattern.compile("[a-zA-Z0-9', -]*");
-		Matcher matcher;
-		int size = 0;
-		String[] splits = new String[2];
-		System.out.println(words.length);
-		for (int i = 0; i < words.length; i++)
-		{
-			splits = words[i].split(",");
-			matcher = pattern.matcher(splits[0]);
-			if (matcher.matches())
+			//reads the entire text file and places it into one string
+			String entireFileText = new Scanner(inFile).useDelimiter("\\Z").next();
+		 	//changes all letters to lower case and replaces all characters that are not
+			//a-z, A-Z, or the apostrophe with a space.
+			//The string is then split by spaces and placed into an array of words
+			//String[] words = entireFileText.replaceAll("[^a-zA-Z' ]", " ").toLowerCase().split("\\s+");
+			String[] words = entireFileText.toLowerCase().split("\\n+");
+			for (int i = 0; i<words.length;i++)
 			{
-				//put in tree
-				bookTitles.addNode(splits[0], splits[1]);
-		    }
+				words[i] = words[i].replaceAll("\n","").replaceAll("\r", "");
+			}
+			Pattern pattern = Pattern.compile("[a-zA-Z0-9', -]*");
+			Matcher matcher;
+			int size = 0;
+			String[] splits = new String[2];
+			System.out.println(words.length);
+			for (int i = 0; i < words.length; i++)
+			{
+				splits = words[i].split(",");
+				matcher = pattern.matcher(splits[0]);
+				if (matcher.matches())
+				{
+					//put in tree
+					bookTitles.addNode(splits[0], splits[1]);
+			    }
 
+			}
+		}
+		catch
+		{
+			System.out.println("Invalid File.");
 		}
 	}
 	/**

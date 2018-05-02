@@ -28,7 +28,8 @@ public class DriverCSDB {
 		boolean correct = false; // Play the game until user guesses the word
 		String stringGuess; // User's guess
 		char guess = ' '; // First char of the guess
-
+		char[] guesses = new char[26]; // Letters already guessed
+		int guessesInt = 0;
 		
 		int spaces; // Number of ' ' in the word user has to guess. Need this in checkGameWon() function
 		
@@ -90,6 +91,9 @@ public class DriverCSDB {
 					System.out.println("Hint: " + hint);
 					printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
 					System.out.println("If you want to quit the game input 0.");
+					System.out.println();
+					System.out.print("Already guessed: ");
+					printGuesses(guesses, guessesInt);
 					System.out.print("Input your guess: ");
 					do
 					{
@@ -111,6 +115,8 @@ public class DriverCSDB {
 					}
 					else
 					{
+						guesses[guessesInt] = guess;
+						guessesInt++;
 						mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
 						hangAMan(hangedMan, mistakes); // Display 'graphics'
 						correct = checkGameWon(guessArray, mistakes, spaces, underscores, word); // Check if user won or lost the game		
@@ -133,6 +139,18 @@ public class DriverCSDB {
 				playAgain = false;
 			}
 		}while (playAgain);
+	}
+	
+	public static void printGuesses(char[] guesses, int guessesInt)
+	{
+		if(guessesInt >= 0)
+		{
+			for(int i = 0; i < guessesInt; i++)
+			{
+				System.out.print(guesses[i] + " ");
+			}
+		}
+		System.out.println();
 	}
 	
 	public static Node findRandomNode(BinaryTree storyTree)
@@ -197,11 +215,12 @@ public class DriverCSDB {
 			    }
 
 			}
-		}
-		catch
+		} 
+		catch (IOException e)
 		{
 			System.out.println("Invalid File.");
 		}
+
 	}
 	/**
 	 * checkGameWon()

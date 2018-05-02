@@ -36,40 +36,22 @@ public class DriverCSDB {
 		String[] hangedMan = new String[7]; // Advanced graphics for background
 		
 		input = new Scanner(System.in);
-		//Open File
-		inFile = new java.io.File("TitlesandAuthors.csv");  //input file
-		if (!inFile.exists())
+		//Ask user for level
+		String level = "";
+		boolean invalidLevel = false;
+		do
 		{
-			System.out.println("File not found");
-			System.exit(-1);
-		}
-		BinaryTree bookTitles = new BinaryTree();
-		//reads the entire text file and places it into one string
-		String entireFileText = new Scanner(inFile).useDelimiter("\\Z").next();
-	 	//changes all letters to lower case and replaces all characters that are not
-		//a-z, A-Z, or the apostrophe with a space.
-		//The string is then split by spaces and placed into an array of words
-		//String[] words = entireFileText.replaceAll("[^a-zA-Z' ]", " ").toLowerCase().split("\\s+");
-		String[] words = entireFileText.toLowerCase().split("\\n+");
-		for (int i = 0; i<words.length;i++)
-		{
-			words[i] = words[i].replaceAll("\n","").replaceAll("\r", "");
-		}
-		Pattern pattern = Pattern.compile("[a-zA-Z0-9'’, -]*");
-		Matcher matcher;
-		int size = 0;
-		String[] splits = new String[2];
-		for (int i = 0; i < words.length; i++)
-		{
-			splits = words[i].split(",");
-			matcher = pattern.matcher(splits[0]);
-			if (matcher.matches())
+			System.out.println("What level do you want? (easy or hard)");
+			level = input.next();
+			if (!level.equalsIgnoreCase("easy") && !level.equalsIgnoreCase("hard"))
 			{
-				//put in tree
-				bookTitles.addNode(splits[0], splits[1]);
-		    }
+				System.out.println("Invalid Level. Try again.");
+				invalidLevel = true;
+			}
+		}while (invalidLevel);
 
-		}
+		BinaryTree bookTitles = new BinaryTree();
+		generateTree(level, bookTitles);
 		int mistakes = 0; // Number of mistakes made by user
 		
 		// Fill the array with advanced graphics. Can't explain, this is too complicated
@@ -105,7 +87,7 @@ public class DriverCSDB {
 				// Run the loop until user makes 7 mistakes or guesses the word/sentence
 				while(mistakes != 7 && correct == false)
 				{
-					System.out.println(word);
+					//System.out.println(word);
 					System.out.println("Hint: " + hint);
 					printGuess(guessArray, underscores); // Show the progress (underscores and guessed letters)
 					System.out.println("If you want to quit the game input 0.");
@@ -119,6 +101,7 @@ public class DriverCSDB {
 					if (guess == '0')
 					{
 						System.out.println("Game Over.");
+						System.out.println("The word was: " + word);
 						return;
 					}
 					// If user guessed the word right, quit the game
@@ -131,11 +114,10 @@ public class DriverCSDB {
 					{
 						mistakes = checkGuess(guess, word, guessArray, mistakes); // Puts correct letters, increments if its a mistakes
 						hangAMan(hangedMan, mistakes); // Display 'graphics'
-						correct = checkGameWon(guessArray, mistakes, spaces, underscores); // Check if user won or lost the game		
+						correct = checkGameWon(guessArray, mistakes, spaces, underscores, word); // Check if user won or lost the game		
 					}
 				}
-
-				System.out.println("Do you want to play again?");
+				System.out.println("Do you want to kill again?");
 				playAgainChar = input.nextLine().toLowerCase().charAt(0);
 				if (playAgainChar == 'y')
 				{
@@ -166,6 +148,55 @@ public class DriverCSDB {
 		}
 		return tempNode;
 	}
+	public static void generateTree(String level, BinaryTree bookTitles) throws IOException
+	{
+		//Open File
+		if (level.equalsIgnoreCase("easy"))
+		{
+			inFile = new java.io.File("TitlesandAuthors.csv");  //input file
+			if (!inFile.exists())
+			{
+				System.out.println("File not found");
+				System.exit(-1);
+			}
+		}
+		else
+		{
+			inFile = new java.io.File("spellingBee.csv");  //input file
+			if (!inFile.exists())
+			{
+				System.out.println("File not found");
+				System.exit(-1);
+			}
+		}
+		//reads the entire text file and places it into one string
+		String entireFileText = new Scanner(inFile).useDelimiter("\\Z").next();
+	 	//changes all letters to lower case and replaces all characters that are not
+		//a-z, A-Z, or the apostrophe with a space.
+		//The string is then split by spaces and placed into an array of words
+		//String[] words = entireFileText.replaceAll("[^a-zA-Z' ]", " ").toLowerCase().split("\\s+");
+		String[] words = entireFileText.toLowerCase().split("\\n+");
+		for (int i = 0; i<words.length;i++)
+		{
+			words[i] = words[i].replaceAll("\n","").replaceAll("\r", "");
+		}
+		Pattern pattern = Pattern.compile("[a-zA-Z0-9', -]*");
+		Matcher matcher;
+		int size = 0;
+		String[] splits = new String[2];
+		System.out.println(words.length);
+		for (int i = 0; i < words.length; i++)
+		{
+			splits = words[i].split(",");
+			matcher = pattern.matcher(splits[0]);
+			if (matcher.matches())
+			{
+				//put in tree
+				bookTitles.addNode(splits[0], splits[1]);
+		    }
+
+		}
+	}
 	/**
 	 * checkGameWon()
 	 * @param char[] guessArray		Array of correct letter and underscores
@@ -175,13 +206,14 @@ public class DriverCSDB {
 	 * @return boolean correct		Return if the game has to end or not
 	 * Description					Checks if the game has to end or not
 	 */
-	public static boolean checkGameWon(char[] guessArray, int mistakes, int spaces, int underscores)
+	public static boolean checkGameWon(char[] guessArray, int mistakes, int spaces, int underscores, String word)
 	{
 		boolean correct = false; // End the game
 		int temp = spaces; // Start with number of spaces
 		if(mistakes == 7)
 		{
 			System.out.println("You killed a man.");
+			System.out.println("The word was: " + word);
 			correct = true;
 		}
 		else
